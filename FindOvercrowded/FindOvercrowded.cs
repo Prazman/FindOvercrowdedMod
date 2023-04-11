@@ -22,7 +22,6 @@ namespace FindOvercrowdedMod
         }
         public void OnEnabled()
         {
-            SimulationManager.RegisterManager((UnityEngine.Object)ColossalFramework.Singleton<PTStopHighlightManager>.instance);
         }
 
 
@@ -33,14 +32,54 @@ namespace FindOvercrowdedMod
 
     }
     #endregion
-    public class FindOvercrowdedModThreading : ThreadingExtensionBase
+
+    #region Mod Behavior
+    /// <summary>
+    /// Here we are creating a custom ILoadingExtension; 
+    /// LoadingExtensionBase implemented ILoadingExtension and provides some default behavior so we are inheriting from that.
+    /// </summary>
+    public class CustomLoader : LoadingExtensionBase
     {
-        private bool _processed = false;
-
-
-        public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
+        /// <summary>
+        /// This event is triggerred when a level is loaded
+        /// </summary>
+        public override void OnLevelLoaded(LoadMode mode)
         {
-            if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKey(KeyCode.I))
+            // Instantiate a custom object
+            GameObject go = new GameObject("FindOvercrowdedMod");
+            go.AddComponent<FindOvercrowdedComponent>();
+
+            base.OnLevelLoaded(mode);
+        }
+    }
+    #endregion
+
+    #region Custom Game Object Components
+    /// <summary>
+    /// Here we creating a custom game object that directly utilize Unity Game Engine;
+    /// See https://docs.unity3d.com/Manual/CreatingAndUsingScripts.html for more detail.
+    /// </summary>
+    public class FindOvercrowdedComponent : MonoBehaviour
+    {
+        /// <summary>
+        /// This event is triggered when this object is created
+        /// </summary>
+        private List<ushort> _overcrowdedStops = new List<ushort>();
+        private PTStopManager _ptStopManager = new PTStopManager();
+
+        public bool _isModActive = false;
+        private bool _processed = false;
+        void Start()
+        {
+            SimulationManager.RegisterManager((UnityEngine.Object)ColossalFramework.Singleton<PTStopHighlightManager>.instance);
+        }
+
+        /// <summary>
+        /// This event is triggered every frame, we can use this to add some animation etc.
+        /// </summary>
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
             {
                 // cancel if they key input was already processed in a previous frame
                 if (_processed) return;
@@ -54,13 +93,17 @@ namespace FindOvercrowdedMod
                 // not both keys pressed: Reset processed state
                 _processed = false;
             }
+
+            if (_isModActive)
+            {
+                if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+                {
+                    OnToggleMod(false);
+                }
+
+            }
         }
 
-
-        private List<ushort> _overcrowdedStops = new List<ushort>();
-        private PTStopManager _ptStopManager = new PTStopManager();
-
-        public bool _isModActive = false;
 
 
         private void OnToggleMod(bool value)
@@ -84,6 +127,7 @@ namespace FindOvercrowdedMod
             PTStopHighlightManager.instance.Highlight(_overcrowdedStops);
 
         }
-
     }
+    #endregion
 }
+
