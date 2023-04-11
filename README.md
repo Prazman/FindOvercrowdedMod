@@ -1,14 +1,15 @@
 # FindOvercrowded Mod
 
-Locates and highlights public transport stops that are overcrowded
+Locates and highlights public transport stops that are overcrowded.
 
 ![GIF](https://github.com/Prazman/FindOvercrowdedMod/blob/master/FindOvercrowdedgif.gif)
 
-Press **Ctrl+SHIFT+0** in-game to highlight overcrowded stops. Press **ESC** or **Ctrl+SHIFT+0** again to remove stop highlighting.
+## Usage
+Press **Ctrl+SHIFT+o** in-game to highlight all overcrowded stops. Press **ESC** or **Ctrl+SHIFT+o** again to remove stop highlighting.
 
-## When is a public transport stop considered overcrowded
-A public transport stop is considered overcrowded when the number of passengers waiting exceeds the capacity of 1 vehicle of the line.
-It should work with all public transport types and vehicles, as long as vehicles have a defined capacity
+## When is a public transport stop considered overcrowded?
+A public transport stop is considered overcrowded when the number of passengers waiting exceeds the capacity of one vehicle of the line.
+It should work with all public transport types and vehicles, as long as vehicles have a defined capacity.
 
 ## Possible improvements
 - Shortcut configuration in mod settings
